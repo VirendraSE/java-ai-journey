@@ -1,5 +1,7 @@
 package com.github.virendra.java_ai_journey.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.virendra.java_ai_journey.dto.request.ChatRequestDTO;
 import com.github.virendra.java_ai_journey.dto.response.ChatResponseDTO;
 import com.github.virendra.java_ai_journey.service.ChatBoatService;
@@ -7,7 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/ai-journey/chatbot")
@@ -81,6 +86,37 @@ public class ChatController {
                 .success(true)
                 .answer(answer)
                 .build();
+
+        return ResponseEntity.ok(chatResponseDTO);
+    }
+
+    @PostMapping(value = "/ask-my-pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ChatResponseDTO> askMyPdf(@RequestParam("file") MultipartFile file,
+                                                    @RequestParam("sessionId") String sessionId,
+                                                    @RequestParam("question") String question) {
+        String answer = null;
+        ChatResponseDTO chatResponseDTO;
+        /*ObjectMapper objectMapper = new ObjectMapper();
+        ChatRequestDTO  chatRequestDTO = null;
+        try {
+            chatRequestDTO = objectMapper.readValue(strChatRequestDTO, ChatRequestDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }*/
+        try {
+            answer = chatBoatService.askMyPdf(file, sessionId, question);
+            chatResponseDTO = ChatResponseDTO.builder()
+                    .success(true)
+                    .answer(answer)
+                    .build();
+        } catch (IOException e) {
+            answer = "Something went wrong: "
+                    + e.getMessage();
+            chatResponseDTO = ChatResponseDTO.builder()
+                    .success(false)
+                    .answer(answer)
+                    .build();
+        }
 
         return ResponseEntity.ok(chatResponseDTO);
     }
