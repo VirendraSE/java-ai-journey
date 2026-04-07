@@ -38,15 +38,11 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
         String response = null;
 
         // This will call an AI model (Claude as of now), it will take prompt from user - question, send it to AI model, and get the answer from them!
-        try {
-            response = chatClient
+        response = chatClient
                     .prompt()
                     .user(question)
                     .call()
                     .content();
-        } catch (Exception e) {
-            response = "something went wrong!! : " + e.getMessage();
-        }
         return response;
     }
 
@@ -70,18 +66,13 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
         String response =  null;
 
         // This will call an AI model (Claude as of now), it will take prompt from user - question, send it to AI model, and get the answer from them!
-        try {
-            response = chatClient
+        response = chatClient
                     .prompt()
                     .user(question)
                     // Builder pattern with updated memory class
                     .advisors(new MessageChatMemoryAdvisor(inMemoryChatMemory, userID, inChatHistoryWindowSize))
                     .call()
                     .content();
-
-        } catch (Exception e) {
-            response = "something went wrong!! : " + e.getMessage();
-        }
         return response;
     }
 
@@ -93,16 +84,12 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
     @Override
     public String askPdf(String question) {
         String response =  null;
-        try {
-            response = chatClient
+        response = chatClient
                     .prompt()
                     .user(question)
                     .advisors(new QuestionAnswerAdvisor(vectorStore))
                     .call()
                     .content();
-        } catch(Exception e){
-            response = "something went wrong!! : " + e.getMessage();
-        }
         return response;
     }
 
@@ -114,21 +101,21 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
      * @return answer from Claude based on uploaded PDF
      */
     @Override
-    public String askMyPdf(MultipartFile file, String sessionId, String question) throws IOException {
+    public String askMyPdf(MultipartFile file, String sessionId, String question)  {
         String response = null;
         // Step 1 - Load PDF for this session
         // Skips automatically if PDF is already loaded!
-        vectorStorageService.loadUserPdfToVectorStore(file, sessionId);
-        try{
+        try {
+            vectorStorageService.loadUserPdfToVectorStore(file, sessionId);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
             response = chatClient
                     .prompt()
                     .user(question)
                     .advisors(new QuestionAnswerAdvisor(vectorStore))
                     .call()
                     .content();
-        } catch (Exception e) {
-            response = "something went wrong!! : " + e.getMessage();
-        }
 
         return response;
     }

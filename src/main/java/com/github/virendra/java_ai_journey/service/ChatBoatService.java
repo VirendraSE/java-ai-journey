@@ -20,5 +20,5 @@ public interface ChatBoatService {
     String askMyPdf(
             MultipartFile file,
             String sessionId,
-            String question) throws IOException;
+            String question);
 }
