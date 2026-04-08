@@ -2,6 +2,7 @@ package com.github.virendra.java_ai_journey.service.impl;
 
 import com.github.virendra.java_ai_journey.service.ChatBoatService;
 import com.github.virendra.java_ai_journey.service.VectorStorageService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,10 +16,9 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 
+@Slf4j
 @Service
 public class ClaudeChatBoatServiceImpl implements ChatBoatService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ClaudeChatBoatServiceImpl.class);
 
     private final ChatClient chatClient;
     private final int inChatHistoryWindowSize = 10;
@@ -37,17 +37,19 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
     public String ask(String question) {
         String response = null;
 
+        log.info("START: Calling AI APIs to ask a question.");
         // This will call an AI model (Claude as of now), it will take prompt from user - question, send it to AI model, and get the answer from them!
         response = chatClient
                     .prompt()
                     .user(question)
                     .call()
                     .content();
+        log.info("END: received response from AI APIs for a question.");
         return response;
     }
 
     @Override
-    public Flux<String> askStram(String question) {
+    public Flux<String> askStream(String question) {
         return chatClient
                 .prompt()
                 .user(question)
@@ -66,6 +68,7 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
         String response =  null;
 
         // This will call an AI model (Claude as of now), it will take prompt from user - question, send it to AI model, and get the answer from them!
+        log.info("START: calling AI APIs with sessionID : {}." , userID);
         response = chatClient
                     .prompt()
                     .user(question)
@@ -73,6 +76,7 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
                     .advisors(new MessageChatMemoryAdvisor(inMemoryChatMemory, userID, inChatHistoryWindowSize))
                     .call()
                     .content();
+        log.info("End: received response from AI APIs with sessionID : {}." , userID);
         return response;
     }
 
@@ -84,12 +88,14 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
     @Override
     public String askPdf(String question) {
         String response =  null;
+        log.info("START: calling AI APIs for pre-loaded PDF doc.");
         response = chatClient
                     .prompt()
                     .user(question)
                     .advisors(new QuestionAnswerAdvisor(vectorStore))
                     .call()
                     .content();
+        log.info("END: received response from AI APIs for pre-loaded PDF doc.");
         return response;
     }
 
@@ -106,16 +112,20 @@ public class ClaudeChatBoatServiceImpl implements ChatBoatService {
         // Step 1 - Load PDF for this session
         // Skips automatically if PDF is already loaded!
         try {
+            log.info("START: loading PDF doc given by user");
             vectorStorageService.loadUserPdfToVectorStore(file, sessionId);
+            log.info("End: loaded PDF doc given by user");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        log.info("START: calling AI APIs for given PDF doc.");
             response = chatClient
                     .prompt()
                     .user(question)
                     .advisors(new QuestionAnswerAdvisor(vectorStore))
                     .call()
                     .content();
+        log.info("End: received response from AI APIs for given PDF doc.");
 
         return response;
     }
