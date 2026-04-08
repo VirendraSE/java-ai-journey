@@ -3,6 +3,7 @@ package com.github.virendra.java_ai_journey.exception;
 import com.github.virendra.java_ai_journey.dto.response.ErrorResponseDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,34 +15,39 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
      * Handles PDF reading and IO errors
-     * @param exeption
+     * @param exception
      * @param request
      * @return ResponseEntity<ErrorResponseDTO>
      */
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<ErrorResponseDTO> handleIOException(IOException exeption,
+    public ResponseEntity<ErrorResponseDTO> handleIOException(IOException exception,
                                                               HttpServletRequest request){
+
+        log.error("IO error on path: {} — {}", request.getRequestURI(), exception.getMessage(), exception); // Logging as error dur to IO operation failure.
         return buildErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ErrorCodes.FILE_PROCESSING_ERROR,
-                ErrorCodes.FILE_PROCESSING_ERROR_MESSAGE + exeption.getMessage(),
+                ErrorCodes.FILE_PROCESSING_ERROR_MESSAGE + exception.getMessage(),
                 request.getRequestURI());
     }
 
     /**
      * Handles when uploaded file exceeds 10MB limit
-     * @param exeption
+     * @param exception
      * @param request
      * @return ResponseEntity<ErrorResponseDTO>
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponseDTO> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException exeption,
+    public ResponseEntity<ErrorResponseDTO> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException exception,
                                                                         HttpServletRequest request) {
+
+        log.warn("File size exceeded on path: {}", request.getRequestURI()); // Logging as warning as validation failed.
 
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
@@ -59,6 +65,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponseDTO> handleMissingParams(MissingServletRequestParameterException exception,
                                                                 HttpServletRequest request){
+
+        log.warn("Missing parameter '{}' on path: {}", exception.getParameterName(), request.getRequestURI()); // Logging as warning as validation failed.
+
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.MISSING_PARAMETER,
@@ -82,6 +91,8 @@ public class GlobalExceptionHandler {
                 .map(violation -> violation.getMessage())
                 .orElse("Validation failed");
 
+        log.warn("Constraint violation on path: {} — {}", request.getRequestURI(), errorMessage);
+
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.VALIDATION_ERROR,
@@ -104,6 +115,8 @@ public class GlobalExceptionHandler {
                         + " — " + error.getDefaultMessage())
                 .orElse("Validation failed");
 
+        log.warn("Validation failed on path: {} — {}", request.getRequestURI(), errorMessage);
+
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.VALIDATION_ERROR,
@@ -121,6 +134,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(IllegalArgumentException exception,
                                                                   HttpServletRequest request) {
 
+        log.warn("Invalid input on path: {} — {}", request.getRequestURI(), exception.getMessage());
+
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 ErrorCodes.INVALID_INPUT,
@@ -137,6 +152,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericException(Exception exception,
                                                                    HttpServletRequest request) {
+
+        log.error("Unexpected error on path: {} — {}", request.getRequestURI(), exception.getMessage(), exception); // Logging as error dur to IO operation failure.
 
         return buildErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,

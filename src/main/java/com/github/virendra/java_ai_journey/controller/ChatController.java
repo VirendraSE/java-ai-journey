@@ -1,7 +1,5 @@
 package com.github.virendra.java_ai_journey.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.virendra.java_ai_journey.dto.request.ChatRequestDTO;
 import com.github.virendra.java_ai_journey.dto.response.ChatResponseDTO;
 import com.github.virendra.java_ai_journey.service.ChatBoatService;
@@ -16,8 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/ai-journey/chatbot")
@@ -80,7 +76,7 @@ public class ChatController {
     // New streaming endpoint - returns word by word in real time
     @GetMapping(value = "/ask-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> askWithStreaming(@RequestParam String question) {
-        return chatBoatService.askStram(question);
+        return chatBoatService.askStream(question);
     }
 
     /**
