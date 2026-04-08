@@ -2,6 +2,7 @@ package com.github.virendra.java_ai_journey.service.impl;
 
 import com.github.virendra.java_ai_journey.service.VectorStorageService;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
@@ -19,10 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class VectorStorageServiceImpl implements VectorStorageService {
-
-    private static final Logger logger = LoggerFactory.getLogger(VectorStorageServiceImpl.class);
     private final VectorStore vectorStore;
 
     // Reads the pdf path from application.properties
@@ -46,7 +46,7 @@ public class VectorStorageServiceImpl implements VectorStorageService {
     @Override
     @PostConstruct
     public void loadPdfToVectorStore() {
-        logger.info("Loading PDF into Vector Store - Starting");
+        log.info("Loading PDF into Vector Store - Starting");
 
         // Step 1 - Read the PDF document
         // PagePdfDocumentReader reads your PDF page by page
@@ -55,14 +55,16 @@ public class VectorStorageServiceImpl implements VectorStorageService {
         // step 2 - Load all pages as documents
         List<Document> documents = pdfDocumentReader.get();
 
+        log.info("Total pages read from PDF: {}", documents.size());
+
         // Step 3 - Split documents into smaller chunks,
         // we are using TokenTextSplitter to breaks large text into smaller pieces that fir in Claude's context window
         TokenTextSplitter splitter = new TokenTextSplitter();
         List<Document> splitDocuments = splitter.split(documents);
 
         // Try this to read chunked data in your console.
-        /* System.out.println("Total chunks after splitting: " + splitDocuments.size());
-        splitDocuments.stream().forEach(i -> {System.out.println("Data~~ : " + i.getText());});*/
+        /* log.info("Total chunks after splitting: {}", splitDocuments.size());
+        splitDocuments.stream().forEach(i -> { log.info("Data~~ : {}" , i.getText());});*/
 
         // Step 4 - Store chunks in Vector (numbers) Store. Spring AI automatically converts text to vectors (embeddings) and stores them
         vectorStore.add(splitDocuments);
@@ -71,7 +73,7 @@ public class VectorStorageServiceImpl implements VectorStorageService {
         // SimpleVectorStore simpleVectorStore = (SimpleVectorStore) vectorStore;
         // simpleVectorStore.save(new File("vector-store.json"));
 
-        logger.info("Loading PDF into Vector Store - Ending : "
+        log.info("Loading PDF into Vector Store - Ending : "
                 + splitDocuments.size() + " chunks stored in Vector Store.");
     }
 
@@ -86,13 +88,11 @@ public class VectorStorageServiceImpl implements VectorStorageService {
 
         // Skip if session already has PDF loaded
         if (sessionPdfLoaded.getOrDefault(sessionId, false)) {
-            System.out.println("Session " + sessionId
-                    + " already has PDF loaded - skipping to load it again!");
+            log.debug("Session {} already has PDF loaded - skipping to load it again!!!!", sessionId);
             return;
         }
 
-        System.out.println("START : Loading user PDF for session: "
-                + sessionId);
+        log.info("START : Loading user PDF for session: {}", sessionId);
 
         // Step 1 - Convert MultipartFile to Resource
         Resource uploadedPdf = new InputStreamResource(
@@ -103,8 +103,7 @@ public class VectorStorageServiceImpl implements VectorStorageService {
                 new PagePdfDocumentReader(uploadedPdf);
         List<Document> documents = pdfReader.get();
 
-        System.out.println(" Total pages to read: "
-                + documents.size());
+        log.info(" Total pages to read: {}", documents.size());
 
         // Step 3 - Split into chunks
         TokenTextSplitter splitter = new TokenTextSplitter();
@@ -120,10 +119,7 @@ public class VectorStorageServiceImpl implements VectorStorageService {
         // Step 6 - Mark session as loaded
         sessionPdfLoaded.put(sessionId, true);
 
-        System.out.println("END : User PDF loaded for session: "
-                + sessionId + " - "
-                + splitDocuments.size()
-                + " chunks stored.");
+        log.info("END : User PDF loaded for session: {} - {} chunks stored." , sessionId , splitDocuments.size());
     }
 
     /**
@@ -133,6 +129,6 @@ public class VectorStorageServiceImpl implements VectorStorageService {
     @Override
     public void clearSession(String sessionId) {
         sessionPdfLoaded.remove(sessionId);
-        System.out.println("Session cleared: " + sessionId);
+        log.info("Session cleared: {}" , sessionId);
     }
 }
