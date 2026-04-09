@@ -3,8 +3,6 @@ package com.github.virendra.java_ai_journey.service.impl;
 import com.github.virendra.java_ai_journey.service.VectorStorageService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -20,6 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implementation of VectorStorageService.
+ * Handles PDF loading, chunking and storage
+ * in SimpleVectorStore with session tracking.
+ *
+ * @author Virendra
+ * @version 1.0.0
+ */
 @Slf4j
 @Service
 public class VectorStorageServiceImpl implements VectorStorageService {

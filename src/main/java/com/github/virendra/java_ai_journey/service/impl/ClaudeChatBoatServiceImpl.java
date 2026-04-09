@@ -3,8 +3,6 @@ package com.github.virendra.java_ai_journey.service.impl;
 import com.github.virendra.java_ai_journey.service.ChatBoatService;
 import com.github.virendra.java_ai_journey.service.VectorStorageService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
@@ -16,6 +14,14 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 
+/**
+ * Implementation of ChatBoatService using Claude AI.
+ * Integrates Spring AI ChatClient with memory,
+ * streaming and RAG capabilities via QuestionAnswerAdvisor.
+ *
+ * @author Virendra
+ * @version 1.0.0
+ */
 @Slf4j
 @Service
 public class ClaudeChatBoatServiceImpl implements ChatBoatService {

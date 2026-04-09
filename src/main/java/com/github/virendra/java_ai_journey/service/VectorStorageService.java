@@ -4,6 +4,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+/**
+ * Service interface for Vector Store operations.
+ * Defines contract for loading and managing
+ * PDF documents in the Vector Store.
+ *
+ * @author Virendra
+ * @version 1.0.0
+ */
 public interface VectorStorageService {
 
     /**

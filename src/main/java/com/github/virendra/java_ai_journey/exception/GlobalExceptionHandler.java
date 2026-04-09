@@ -15,6 +15,14 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+/**
+ * Global exception handler for all controllers.
+ * Provides consistent error responses across
+ * all endpoints using @RestControllerAdvice.
+ *
+ * @author Virendra
+ * @version 1.0.0
+ */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
