@@ -6,6 +6,14 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for RAG components.
+ * Sets up SimpleVectorStore bean for storing
+ * and searching document embeddings.
+ *
+ * @author Virendra
+ * @version 1.0.0
+ */
 @Configuration
 public class RagConfig {
 
