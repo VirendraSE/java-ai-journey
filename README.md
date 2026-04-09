@@ -85,14 +85,12 @@ cp src/main/resources/application.properties \
 spring.ai.anthropic.api-key=your-api-key-here
 ```
 
-**3. Add your PDF document**
-
-**4. Run the application**
+**3. Run the application**
 ```bash
 mvn spring-boot:run
 ```
 
-**5. Access Swagger UI**
+**4. Access Swagger UI**
 
 http://localhost:8080/swagger-ui.html
 
