@@ -1,22 +1,113 @@
 # Java AI Journey 🚀
 
-A Spring Boot application demonstrating AI integration using
-Spring AI and Anthropic Claude API.
+> Built by a **Senior Java Developer** with 15 years of experience
+> in Spring Boot and REST APIs, exploring the intersection of
+> enterprise Java and modern AI development using Spring AI and Claude.
+
+---
+
+## Tech Stack Badges
+
+![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.3-green?style=flat-square&logo=springboot)
+![Spring AI](https://img.shields.io/badge/Spring%20AI-1.0.0--M6-blue?style=flat-square)
+![Claude](https://img.shields.io/badge/Claude-AI-purple?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+
+---
+
+## About This Project
+
+A production-ready Spring Boot application demonstrating
+AI integration using Spring AI and Anthropic Claude API.
+This project showcases how senior Java developers can leverage
+their existing expertise to build modern AI-powered applications.
+
+---
 
 ## Features
-- 💬 Stateless chat with Claude AI
-- 🧠 Stateful conversation with memory per user
-- 📡 Real time streaming responses with Flux
-- 📄 RAG (Retrieval Augmented Generation) with PDF documents
+
+| Feature | Endpoint | Description |
+|---|---|---|
+| 💬 Stateless Chat | `GET /ask` | One off questions to Claude AI |
+| 🧠 Stateful Chat | `POST /chat` | Conversation with memory per user |
+| 📡 Streaming | `GET /ask-stream` | Real time word by word responses |
+| 📄 Pre-loaded RAG | `GET /ask-pdf` | Questions from pre-loaded PDF |
+| 🔄 Dynamic RAG | `POST /ask-my-pdf` | Upload your own PDF and ask questions |
+
+---
+
+## Architecture Highlights
+
+- **SOLID Principles** — Service interface pattern throughout
+- **Global Exception Handling** — Consistent error responses
+- **Input Validation** — Annotation based validation on all endpoints
+- **Proper Logging** — SLF4J with rolling file policy
+- **API Documentation** — Swagger UI at `/swagger-ui.html`
+- **Session Management** — Per user PDF tracking with HashMap
+- **Security** — API keys protected via local properties override
+
+---
 
 ## Tech Stack
-- Java 21
-- Spring Boot 3.4.3
-- Spring AI 1.0.0-M6
-- Anthropic Claude API (claude-sonnet-4-20250514)
-- Maven
 
-## My Project Structure
+- **Java 21** — Latest LTS version
+- **Spring Boot 3.4.3** — Production grade framework
+- **Spring AI 1.0.0-M6** — AI integration framework
+- **Anthropic Claude** — claude-sonnet-4-20250514 model
+- **SimpleVectorStore** — In memory vector store for RAG
+- **SpringDoc 2.8.3** — OpenAPI documentation
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Java 21
+- Maven 3.8+
+- Anthropic API key from console.anthropic.com
+
+### Setup
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/VirendraSE/java-ai-journey.git
+cd java-ai-journey
+```
+
+**2. Configure your API key**
+```bash
+# Create local properties file
+cp src/main/resources/application.properties \
+   src/main/resources/application-local.properties
+
+# Add your Anthropic API key to application-local.properties
+spring.ai.anthropic.api-key=your-api-key-here
+```
+
+**3. Add your PDF document**
+
+**4. Run the application**
+```bash
+mvn spring-boot:run
+```
+
+**5. Access Swagger UI**
+
+http://localhost:8080/swagger-ui.html
+
+---
+
+## API Documentation
+
+Full interactive API documentation available at:
+
+http://localhost:8080/swagger-ui.html
+
+---
+
+## Project Structure
+```plaintext
 java-ai-journey/
 ├── claude.md
 ├── vector-store.json
@@ -26,39 +117,42 @@ java-ai-journey/
 │   │   └── RagConfig.java
 │   ├── controller/
 │   │   └── ChatController.java
+│   ├── exception/
+│   │   └── GlobalExceptionHandler.java
 │   ├── service/
-│   │   ├── impl/
-│   │   │   └── ClaudeChatBoatServiceImpl.java
-│   │   └── ChatBoatService.java
+│   │   ├── VectorStorageService.java
+│   │   ├── ChatBoatService.java
+│   │   └── impl/
+│   │       ├── VectorStorageServiceImpl.java
+│   │       └── ClaudeChatBoatServiceImpl.java
 │   ├── dto/
 │   │   ├── request/
-│   │   │   └── ChatRequestDTO.java
+│   │   │   ├── ChatRequestDTO.java
+│   │   │   └── AskMyPdfRequestDTO.java
 │   │   └── response/
-│   │       └── ChatResponseDTO.java
+│   │       ├── ChatResponseDTO.java
+│   │       └── ErrorResponseDTO.java
 └── src/main/resources/
+├── banner.txt
 ├── docs/
 │   └── my-document.pdf
 └── application.properties
-└── application_local.properties
+└── application-local.properties
+```
+---
 
-## Endpoints
-| Endpoint                          | Method | Description |
-| `/ai-journey/chatbot/isAlive`     | GET    | Health check |
-| `/ai-journey/chatbot/ask`         | GET    | Stateless question |
-| `/ai-journey/chatbot/chat`        | POST   | Stateful conversation |
-| `/ai-journey/chatbot/ask-stream`  | GET    | Streaming response |
-| `/ai-journey/chatbot/ask-pdf`     | GET    | RAG question from PDF |
+## About the Developer
 
-## Setup
-1. Clone the repository : git clone https://github.com/VirendraSE/java-ai-journey.git
-2. Open `application.properties`
-3. Replace 'spring.ai.anthropic.api-key' property with your Anthropic API key
-4. Run `mvn spring-boot:run`
+**Virendra** — Senior Java Backend Developer
 
-## Author
-**Virendra** — Senior Java Backend Developer  
-15 years experience in Java, Spring Boot, REST APIs and System Design  
-Currently exploring AI development with Spring AI.
+- 15 years experience in Java, Spring Boot, REST APIs and System Design
+- Currently expanding into AI development with Spring AI and Claude
+- Building production-ready AI applications using enterprise Java patterns
+
+[![GitHub](https://img.shields.io/badge/GitHub-VirendraSE-black?style=flat-square&logo=github)](https://github.com/VirendraSE)
+
+---
 
 ## License
-MIT License
+
+This project is licensed under the MIT License.
